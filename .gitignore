@@ -1,0 +1,5 @@
+gen/__pycache__/
+semantic/__pycache__/
+codegen/__pycache__/
+*.pyc
+
