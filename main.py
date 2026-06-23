@@ -3,6 +3,7 @@ from antlr4 import CommonTokenStream, FileStream
 from gen.NeuroLangLexer import NeuroLangLexer
 from gen.NeuroLangParser import NeuroLangParser
 from semantic.semantic_visitor import SemanticVisitor
+from codegen.tac_visitor import TACVisitor
 from codegen.code_gen_visitor import CodeGenVisitor
 
 def main():
@@ -33,12 +34,23 @@ def main():
 
     print('Análisis semántico: OK')
 
-    # 4. Generación de código LLVM IR
+    # 4. Generación de código de tres direcciones (3AC)
+    tac_visitor = TACVisitor()
+    tac_visitor.visit(arbol)
+    codigo_tac = tac_visitor.tac.codigo()
+
+    print('\n=== CÓDIGO DE TRES DIRECCIONES ===')
+    print(codigo_tac)
+
+    with open('salida.tac', 'w') as f:
+        f.write(codigo_tac)
+
+    # 5. Generación de código LLVM IR
     codegen = CodeGenVisitor()
     codegen.visit(arbol)
     codegen.finalizar()
 
-    # 5. Guardar y mostrar el IR generado
+    # 6. Guardar y mostrar el IR generado
     ir_texto = codegen.emitir("salida.ll")
     print('\n=== LLVM IR GENERADO ===')
     print(ir_texto)
