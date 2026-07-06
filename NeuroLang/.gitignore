@@ -1,0 +1,14 @@
+gen/__pycache__/
+semantic/__pycache__/
+codegen/__pycache__/
+*.pyc
+
+# artefactos generados por el compilador (se regeneran con make run)
+salida.tac
+salida.ll
+
+# ejecutables compilados con clang (build/ generado por `make build` o los tests)
+build/
+neurolang
+*.o
+
