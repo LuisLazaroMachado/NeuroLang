@@ -1,0 +1,2 @@
+*.nl linguist-language=Text
+gen/** linguist-generated
