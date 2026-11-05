@@ -3,3 +3,9 @@ semantic/__pycache__/
 codegen/__pycache__/
 *.pyc
 
+
+neurolang
+salida.ll
+salida.tac
+__pycache__/
+.venv/
