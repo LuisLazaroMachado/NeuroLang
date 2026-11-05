@@ -9,3 +9,5 @@ salida.ll
 salida.tac
 __pycache__/
 .venv/
+
+.pytest_cache/
