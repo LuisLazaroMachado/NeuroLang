@@ -1,44 +1,57 @@
-from gen.NeuroLangVisitor import NeuroLangVisitor
+﻿from gen.NeuroLangVisitor import NeuroLangVisitor
+
 
 class SemanticVisitor(NeuroLangVisitor):
     def __init__(self):
-        self.canales  = set()  # nombres de canales declarados con 'channel'
-        self.umbrales = set()  # nombres de umbrales declarados con 'threshold'
-        self.errores  = []     # lista de errores semánticos encontrados
+        self.canales = {}    # nombre -> tipo de señal (eeg, emg, eog)
+        self.umbrales = {}   # nombre -> valor numérico
+        self.errores = []    # errores semánticos con línea:columna
+
+    def _error(self, token, mensaje):
+        self.errores.append(f"línea {token.line}:{token.column}: {mensaje}")
 
     # -- channel C3 : eeg;
     def visitChannelDecl(self, ctx):
-        nombre = ctx.ID().getText()
+        tok = ctx.ID().getSymbol()
+        nombre = tok.text
         if nombre in self.canales:
-            # error: canal declarado dos veces
-            self.errores.append(f"Canal '{nombre}' ya declarado")
+            self._error(tok, f"Canal '{nombre}' ya declarado")
+        elif nombre in self.umbrales:
+            self._error(tok, f"'{nombre}' ya está declarado como umbral")
         else:
-            self.canales.add(nombre)  # registrar canal como declarado
+            self.canales[nombre] = ctx.signalType().getText()
 
     # -- threshold alto : 0.80;
     def visitThresholdDecl(self, ctx):
-        nombre = ctx.ID().getText()
+        tok = ctx.ID().getSymbol()
+        nombre = tok.text
         if nombre in self.umbrales:
-            # error: umbral declarado dos veces
-            self.errores.append(f"Umbral '{nombre}' ya declarado")
+            self._error(tok, f"Umbral '{nombre}' ya declarado")
+        elif nombre in self.canales:
+            self._error(tok, f"'{nombre}' ya está declarado como canal")
         else:
-            self.umbrales.add(nombre)  # registrar umbral como declarado
+            self.umbrales[nombre] = float(ctx.NUMBER().getText())
 
     # -- when signal(C3) > alto { output("A"); }
     def visitWhenStmt(self, ctx):
-        # verificar que el canal usado en signal(ID) fue declarado
-        canal = ctx.signal().ID().getText()
+        tok = ctx.signal().ID().getSymbol()
+        canal = tok.text
         if canal not in self.canales:
-            self.errores.append(f"Canal '{canal}' usado pero no declarado")
+            if canal in self.umbrales:
+                self._error(tok, f"'{canal}' es un umbral, se esperaba un canal en signal(...)")
+            else:
+                self._error(tok, f"Canal '{canal}' usado pero no declarado")
 
-        # verificar que el umbral usado en la expresión fue declarado
         expr = ctx.expression()
         if expr.ID():
-            umbral = expr.ID().getText()
-            if umbral not in self.umbrales:
-                self.errores.append(f"Umbral '{umbral}' usado pero no declarado")
+            tok = expr.ID().getSymbol()
+            nombre = tok.text
+            if nombre not in self.umbrales:
+                if nombre in self.canales:
+                    self._error(tok, f"'{nombre}' es un canal, se esperaba un umbral o un número")
+                else:
+                    self._error(tok, f"Umbral '{nombre}' usado pero no declarado")
 
-        # visitar cada output dentro del when
         for out in ctx.outputStmt():
             self.visit(out)
 

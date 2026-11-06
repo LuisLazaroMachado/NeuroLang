@@ -76,5 +76,6 @@ def test_error_semantico(nombre, mensaje, tmp_path):
 
 def test_error_sintactico(tmp_path):
     r = compilar("pruebaErrorEEG.nl", tmp_path)
+    assert r.returncode == 1
     assert "Errores sintácticos" in r.stdout
     assert not (tmp_path / "salida.tac").exists()

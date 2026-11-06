@@ -21,7 +21,7 @@ La gramática completa está en [`NeuroLang.g4`](NeuroLang.g4).
 | Fase | Archivo |
 |---|---|
 | Léxico y sintáctico | `NeuroLang.g4` → `gen/` (generado con ANTLR 4.13.1) |
-| Semántico (canales y umbrales declarados, sin duplicados) | `semantic/semantic_visitor.py` |
+| Semántico (declaración previa, sin duplicados ni nombres cruzados canal/umbral; errores con línea:columna) | `semantic/semantic_visitor.py` |
 | Código de tres direcciones | `codegen/tac_visitor.py`, `codegen/TACEmitter.py` |
 | LLVM IR | `codegen/code_gen_visitor.py` (usa `llvmlite`) |
 
@@ -78,4 +78,4 @@ java -jar <ruta>\antlr-4.13.1-complete.jar -Dlanguage=Python3 -visitor NeuroLang
 ## Limitaciones actuales
 
 - Los valores de señal no se leen en ejecución: se fijan al compilar con `--signal CANAL=VALOR` (por defecto `0.0`).
-- El tipo de señal (`eeg`, `emg`, `eog`) se valida sintácticamente pero no influye en el análisis semántico ni en la generación de código.
+- El tipo de señal (`eeg`, `emg`, `eog`) se registra en la tabla de símbolos, pero el lenguaje aún no define reglas que dependan de él.
