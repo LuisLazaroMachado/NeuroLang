@@ -1,5 +1,7 @@
 ﻿# NeuroLang
 
+[![CI](https://github.com/LuisLazaroMachado/NeuroLang/actions/workflows/ci.yml/badge.svg)](https://github.com/LuisLazaroMachado/NeuroLang/actions/workflows/ci.yml)
+
 Compilador de un lenguaje de dominio específico (DSL) para definir reglas de umbral sobre señales biomédicas (EEG, EMG, EOG). Recorre todas las fases de un compilador: análisis léxico y sintáctico (ANTLR4), análisis semántico, código de tres direcciones (3AC) y generación de LLVM IR.
 
 ## El lenguaje
@@ -66,6 +68,15 @@ python main.py tests\pruebaLetras.nl --signal C3=0.85 --run
 ### Errores semánticos
 
 `tests/pruebaErrorSemantico.nl` y `tests/pruebaErrorUmbral.nl` usan un canal o umbral sin declarar y terminan con un mensaje de error.
+
+## Tests
+
+```powershell
+pip install -r requirements-dev.txt
+pytest -v
+```
+
+La suite compila los programas de `tests/` y comprueba el código de tres direcciones, la ejecución con `--signal` y los errores sintácticos y semánticos. Se ejecuta automáticamente en GitHub Actions en cada push.
 
 ## Regenerar el parser
 
