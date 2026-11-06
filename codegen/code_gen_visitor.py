@@ -2,7 +2,8 @@ from llvmlite import ir
 from gen.NeuroLangVisitor import NeuroLangVisitor
 
 class CodeGenVisitor(NeuroLangVisitor):
-    def __init__(self):
+    def __init__(self, senales=None):
+        self.senales = senales or {}
         # Tipos de datos LLVM que usaremos
         self.i32 = ir.IntType(32)       # entero 32 bits (para printf y main)
         self.i8  = ir.IntType(8)        # carácter (para strings)
@@ -62,7 +63,7 @@ class CodeGenVisitor(NeuroLangVisitor):
     def visitChannelDecl(self, ctx):
         nombre = ctx.ID().getText()
         ptr = self.builder.alloca(self.f64, name=nombre)        # reserva espacio en stack
-        self.builder.store(ir.Constant(self.f64, 0.0), ptr)     # inicializa en 0.0
+        self.builder.store(ir.Constant(self.f64, self.senales.get(nombre, 0.0)), ptr)     # inicializa en 0.0
         self.canales[nombre] = ptr                               # guarda puntero en tabla
 
     # -- threshold alto : 0.80;

@@ -4,14 +4,15 @@ from gen.NeuroLangVisitor import NeuroLangVisitor
 class TACVisitor(NeuroLangVisitor):
     """Genera código de tres direcciones (3AC) para NeuroLang."""
 
-    def __init__(self):
+    def __init__(self, senales=None):
+        self.senales = senales or {}
         self.tac = TACEmitter()
 
     # -- channel C3 : eeg;
     def visitChannelDecl(self, ctx):
         nombre = ctx.ID().getText()
         # declarar canal con valor inicial 0.0
-        self.tac.emitir_copia(nombre, "0.0")
+        self.tac.emitir_copia(nombre, str(self.senales.get(nombre, 0.0)))
 
     # -- threshold alto : 0.80;
     def visitThresholdDecl(self, ctx):

@@ -53,6 +53,16 @@ L0_si:
 L0_fin:
 ```
 
+### Valores de señal y ejecución
+
+El lenguaje no lee señales en ejecución: el valor inicial de cada canal se fija al compilar (por defecto `0.0`).
+
+```powershell
+python main.py tests\pruebaLetras.nl --signal C3=0.85 --run
+```
+
+`--run` ejecuta el código de tres direcciones e imprime los `output` que se activan (aquí: `A`, `B`, `C`).
+
 ### Errores semánticos
 
 `tests/pruebaErrorSemantico.nl` y `tests/pruebaErrorUmbral.nl` usan un canal o umbral sin declarar y terminan con un mensaje de error.
@@ -67,5 +77,5 @@ java -jar <ruta>\antlr-4.13.1-complete.jar -Dlanguage=Python3 -visitor NeuroLang
 
 ## Limitaciones actuales
 
-- Los canales se inicializan en `0.0` y el lenguaje no define cómo recibir valores de señal, por lo que las reglas `when` con umbrales positivos no se activan.
+- Los valores de señal no se leen en ejecución: se fijan al compilar con `--signal CANAL=VALOR` (por defecto `0.0`).
 - El tipo de señal (`eeg`, `emg`, `eog`) se valida sintácticamente pero no influye en el análisis semántico ni en la generación de código.
